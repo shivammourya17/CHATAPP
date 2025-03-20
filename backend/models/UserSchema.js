@@ -1,37 +1,42 @@
-const mongoose = required("mongoose");
+const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
   {
     fullname: {
       type: String,
       required: true,
+      trim: true, // Removes extra spaces
     },
     username: {
       type: String,
       required: true,
       unique: true,
+    
     },
     email: {
       type: String,
       required: true,
       unique: true,
+    
     },
     gender: {
       type: String,
       required: true,
-      enum: ["male", "female", "other"], // Added 'other' for inclusivity
+      enum: ["male", "female"],
     },
     password: {
       type: String,
       required: true,
       minlength: 6,
     },
-    profilepic: {
+    profilePic: {
       type: String,
-      default: "", // Default profile picture URL can be set here
+      default: "", // ✅ Default set to an empty string
     },
   },
-  { timestamps: true } // ✅ Moved inside schema options
+  { timestamps: true } // ✅ Schema options moved correctly
 );
+
+
 
 module.exports = mongoose.model("User", UserSchema);
