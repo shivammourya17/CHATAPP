@@ -1,28 +1,36 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser"); 
 const { connect } = require("./config/database");
+const { isLogin } = require("./middlewares/isLogin"); // ✅ Import middleware
 
 dotenv.config();
 const app = express();
 
-// ✅ Ensure JSON middleware is declared before routes
-app.use(express.json());
+// ✅ Middleware
+app.use(express.json());  
+app.use(cookieParser());  
 
-// ✅ Connect to the database before starting the server
+// ✅ Connect to MongoDB
 connect();
 
+// ✅ Import Routes
 const authRegister = require("./routes/authUser");
-app.use("/api/user", authRegister);
+const messageRouter = require("./routes/messageRoute");
+const userRouter= require("./routes/userRoute")
 
-// ✅ Test route
+// ✅ Use Routes
+app.use("/api/user", authRegister);
+app.use("/api/message", isLogin, messageRouter);
+app.use("/api/user",isLogin,userRouter) // 🔒 Protect message routes
+
+// ✅ Test Route
 app.get("/", (req, res) => {
     res.send("Server is working");
 });
 
-// ✅ Use environment variable for PORT with a default fallback
+// ✅ Start Server
 const PORT = process.env.PORT || 3000;
-
-// ✅ Start the server only after connecting to the database
 app.listen(PORT, () => {
     console.log(`✅ Server is running on port ${PORT}`);
 });
