@@ -1,12 +1,14 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const cookieParser = require("cookie-parser"); 
-const cors = require("cors"); // ✅ Import CORS
+const cookieParser = require("cookie-parser");
+const cors = require("cors"); 
 const { connect } = require("./config/database");
 const { isLogin } = require("./middlewares/isLogin"); 
 
+// ✅ Import app & server from socket setup
+const { app, server } = require("./socket/socket");
+
 dotenv.config();
-const app = express();
 
 // ✅ Middleware
 app.use(express.json());  
@@ -33,7 +35,7 @@ const messageRouter = require("./routes/messageRoute");
 const userRouter = require("./routes/userRoute");
 
 // ✅ Use Routes
-app.use("/api/user", authRegister);
+app.use("/api/auth", authRegister);
 app.use("/api/message", isLogin, messageRouter);
 app.use("/api/user", isLogin, userRouter);
 
@@ -43,7 +45,7 @@ app.get("/", (req, res) => {
 });
 
 // ✅ Start Server
-const PORT = process.env.PORT || 4000;  // Changed default to 4000
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
     console.log(`✅ Server is running on port ${PORT}`);
 });

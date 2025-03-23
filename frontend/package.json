@@ -19,7 +19,9 @@
     "react-router-dom": "^7.4.0",
     "react-toastify": "^11.0.5",
     "react-toastify-redux": "^1.0.0-rc.2",
-    "tailwindcss": "^4.0.15"
+    "socket.io-client": "^4.8.1",
+    "tailwindcss": "^4.0.15",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

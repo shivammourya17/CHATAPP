@@ -5,7 +5,7 @@ const { isLogin } = require("../middlewares/isLogin");
 
 // Correct route definition
 router.get("/search", isLogin, getUserBySearch);
-router.get("/currentChatters",isLogin,getCurrentChatters)
+router.get("/currentChatters",isLogin,getCurrentChatters);
 
 
 module.exports = router;
