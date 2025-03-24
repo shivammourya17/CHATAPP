@@ -66,8 +66,6 @@ npm i socket.io-client react-router-dom axios
 
 ```
 
-  
-
 #### 🖥️ **Start Backend**  
 ```sh
 cd backend
