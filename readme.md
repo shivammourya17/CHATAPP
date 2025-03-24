@@ -63,14 +63,9 @@ npx tailwindcss init -p
 npm i socket.io-client react-router-dom axios
 ```
 
-
-```
-
 #### 🖥️ **Start Backend**  
-```sh
 cd backend
 npm run dev
-```
 
 #### 🌐 **Start Frontend**  
 ```sh
