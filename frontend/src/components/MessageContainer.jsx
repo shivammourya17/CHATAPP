@@ -4,27 +4,27 @@ import { useAuth } from '../context/AuthContext';
 import { TiMessages } from "react-icons/ti";
 import { IoArrowBackSharp, IoSend } from 'react-icons/io5';
 import axios from 'axios';
-//import { useSocketContext } from '../../context/SocketContext';
-//import notify from '../assets/sound/notification.mp3';
+import { useSocketContext } from '../context/SocketContext';
+import notify from '../assets/sound/notification.mp3';
 
 const MessageContainer = ({ onBackUser }) => {
-    const { messages, selectedConversation, setMessage, setSelectedConversation } = userConversation();
-    //const {socket} = useSocketContext();
+    const { messages, selectedConversation, setMessage,  } = userConversation();
+    const {socket} = useSocketContext();
     const { authUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [sending , setSending] = useState(false);
     const [sendData , setSnedData] = useState("")
     const lastMessageRef = useRef();
 
-    // useEffect(()=>{
-    //   socket?.on("newMessage",(newMessage)=>{
-    //     const sound = new Audio(notify);
-    //     sound.play();
-    //     setMessage([...messages,newMessage])
-    //   })
+    useEffect(()=>{
+      socket?.on("newMessage",(newMessage)=>{
+        const sound = new Audio(notify);
+        sound.play();
+        setMessage([...messages,newMessage])
+      })
 
-    //   return ()=> socket?.off("newMessage");
-    // },[socket,setMessage,messages])
+      return ()=> socket?.off("newMessage");
+    },[socket,setMessage,messages])
 
     useEffect(()=>{
         setTimeout(()=>{
@@ -36,9 +36,8 @@ const MessageContainer = ({ onBackUser }) => {
         const getMessages = async () => {
             setLoading(true);
             try {
-                const get = await axios.get(`http://localhost:4000/api/message/${selectedConversation?._id}`);
+                const get = await axios.get(`http://localhost:4000/api/message/${selectedConversation?._id}`,{withCredentials:true});
                 const data = await get.data;
-                
                 if (data.success === false) {
                     setLoading(false);
                     console.log(data.message);
@@ -64,7 +63,7 @@ const MessageContainer = ({ onBackUser }) => {
         e.preventDefault();
         setSending(true);
         try {
-            const res =await axios.post(`http://localhost:4000/api/message/send/${selectedConversation?._id}`,{messages:sendData});
+            const res =await axios.post(`http://localhost:4000/api/message/send/${selectedConversation?._id}`,{messages:sendData},{withCredentials:true});
             const data = await res.data;
             if (data.success === false) {
                 setSending(false);
@@ -102,7 +101,7 @@ const MessageContainer = ({ onBackUser }) => {
                 </div>
                 <div className='flex justify-between mr-2 gap-2'>
                   <div className='self-center'>
-                    <img className='rounded-full w-6 h-6 md:w-10 md:h-10 cursor-pointer' src={selectedConversation?.profilepic} />
+                    <img className='rounded-full w-6 h-6 md:w-10 md:h-10 cursor-pointer' src={selectedConversation?.profilePic} />
                   </div>
                   <span className='text-gray-950 self-center text-sm md:text-xl font-bold'>
                     {selectedConversation?.username}

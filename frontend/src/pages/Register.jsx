@@ -32,7 +32,7 @@ const Register = () => {
       return toast.error("Passwords do not match");
     }
     try {
-      const register = await axios.post(`http://localhost:4000/api/auth/register`, inputData);
+      const register = await axios.post(`http://localhost:4000/api/auth/register`, inputData,{withCredentials:true});
       const data = register.data;
       if (data.success === false) {
         setLoading(false);

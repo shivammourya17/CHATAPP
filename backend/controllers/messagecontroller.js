@@ -1,95 +1,78 @@
-const Message = require("../models/MessageSchema");
-const Conversation = require("../models/ConversationSchema");
-const {getReceiverSocketId} = require("../socket/socket");
+const Conversation = require('../models/ConversationSchema'); // Ensure the correct path
+const Message = require('../models/MessageSchema'); // Ensure the correct path
+const { getReceiverSocketId } = require("../Socket/socket") // Ensure the correct path
+  // Import socket instance
+    
+    const sendMessage = async (req, res) => {
+        try {
+           
+            const { messages } = req.body;
+            const { id: receiverId } = req.params;
+            const senderId = req.user?._id;  // Use optional chaining to avoid errors
 
-
-exports.sendMessage = async (req, res) => {
-    try {
-        // ✅ Extract data properly
-        const { message } = req.body;
-        const receiverId = req.params.id;
-        const senderId = req.user?._id; // Ensure senderId is valid
-
-        // ✅ Validate required fields
-        if (!message || !receiverId) {
-            return res.status(400).json({
-                success: false,
-                message: "Message content and receiver ID are required.",
+            
+            let chats = await Conversation.findOne({
+                participants: { $all: [senderId, receiverId] }
             });
+    
+            if (!chats) {
+                chats = await Conversation.create({
+                    participants: [senderId, receiverId],
+                });
+            }
+    
+            const newMessages = new Message({
+                senderId,
+                receiverId,
+                message: messages,
+                conversationId: chats._id
+            });
+    
+            if (newMessages) {
+                chats.messages.push(newMessages._id);
+            }
+    
+            await Promise.all([chats.save(), newMessages.save()]);
+    
+            // SOCKET.IO function 
+            const receiverSocketId = getReceiverSocketId(receiverId);
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("newMessage", newMessages);
+            }
+    
+            res.status(201).send(newMessages);
+    
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: error.message
+            });
+            console.log(`Error in sendMessage: ${error}`);
         }
-
-        // ✅ Find or create conversation
-        let chats = await Conversation.findOne({
-            participants: { $all: [receiverId, senderId] }
-        });
-
-        if (!chats) {
-            chats = new Conversation({ participants: [receiverId, senderId] });
-            await chats.save();
+    };
+    
+    const getMessages = async (req, res) => {
+        try {
+            const { id: receiverId } = req.params;
+            const senderId = req.user._conditions?._id;
+    
+            const chats = await Conversation.findOne({
+                participants: { $all: [senderId, receiverId] }
+            }).populate("messages");
+    
+            if (!chats) return res.status(200).send([]);
+    
+            const message = chats.messages;
+            res.status(200).send(message);
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: error.message
+            });
+            console.log(`Error in getMessages: ${error}`);
         }
-
-        // ✅ Create new message
-        const newMessage = new Message({
-            receiverId,
-            senderId,
-            message,
-            conversationId: chats._id
-        });
-
-        // ✅ Push message into conversation
-        chats.messages.push(newMessage._id);
-
-        // ✅ Save both conversation and message
-        await Promise.all([chats.save(), newMessage.save()]);
-
-           //SOCKET.IO function 
-               const receiverSocketId = getReceiverSocketId(receiverId);
-                if(receiverSocketId){
-                io.to(receiverSocketId).emit("newMessage",newMessage)
-     }
-
-        // ✅ Send response
-        res.status(201).json({
-            success: true,
-            message: "Message sent successfully",
-            data: newMessage
-        });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error: err.message
-        });
-    }
-};
-
-
-exports.getMessage = async (req, res) => {
-    try {
-        const receiverId = req.params.id;
-        const senderId = req.user?._id; // Ensure senderId is valid
-
-        // ✅ Find the conversation between sender and receiver
-        const chats = await Conversation.findOne({
-            participants: { $all: [receiverId, senderId] }
-        }).populate("messages"); // ✅ Corrected `.populate("messages")`
-
-        if (!chats) {
-            return res.status(202).json({ success: false, message: "No conversation found", messages: [] });
-        }
-
-        // ✅ Send messages from the conversation
-        res.status(200).json({ success: true, messages: chats.messages });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error: err.message
-        });
-    }
-};
-
+    };
+    
+    // ✅ Export using CommonJS
+    module.exports = { sendMessage, getMessages };
+    

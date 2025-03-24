@@ -92,9 +92,15 @@ exports.UserLogin = async (req, res) => {
         }
 
         // Generate JWT Token
-        jwtToken(user._id, res);
+       const Tokenn= jwtToken(user._id); 
+       res.cookie("accessToken",Tokenn,{
+        httpOnly:true,
+        secure:false
+            
+       })
+       
  
-        // Send success response
+        // // Send success response
         res.status(200).json({
             success: true,
             _id: user._id,

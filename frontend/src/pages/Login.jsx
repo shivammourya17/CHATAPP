@@ -25,7 +25,7 @@ const Login = () => {
     try {
 
       
-      const login = await axios.post(`http://localhost:4000/api/auth/login`, userInput);
+      const login = await axios.post(`http://localhost:4000/api/auth/login`, userInput,{withCredentials:true});
       const data = login.data;
       if (data.success === false) {
         setLoading(false);

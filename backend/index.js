@@ -6,7 +6,8 @@ const { connect } = require("./config/database");
 const { isLogin } = require("./middlewares/isLogin"); 
 
 // ✅ Import app & server from socket setup
-const { app, server } = require("./socket/socket");
+const { app, server } = require("./Socket/socket");
+
 
 dotenv.config();
 

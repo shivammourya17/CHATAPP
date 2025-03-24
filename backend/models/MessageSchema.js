@@ -19,7 +19,7 @@ const MessageSchema = new mongoose.Schema(
     conversationId: {  // ✅ Added missing colon
       type: mongoose.Schema.Types.ObjectId,  
       ref: "Conversation" ,
-      defaukt:[]
+      default:[]
     }
   },
   { timestamps: true } // ✅ Removed extra '/'

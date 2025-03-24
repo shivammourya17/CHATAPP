@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { IoArrowBackSharp } from 'react-icons/io5';
 import { BiLogOut } from "react-icons/bi";
 import userConversation from '../Zustans/useConversation';
-//import { useSocketContext } from '../../context/SocketContext';
+import { useSocketContext } from '../context/SocketContext';
 
 const Sidebar = ({ onSelectUser }) => {
 
@@ -20,25 +20,25 @@ const Sidebar = ({ onSelectUser }) => {
     const [selectedUserId, setSetSelectedUserId] = useState(null);
     const [newMessageUsers, setNewMessageUsers] = useState('');
     const {messages , setMessage, selectedConversation ,  setSelectedConversation} = userConversation();
- //   const { onlineUser , socket} = useSocketContext();
+    const { onlineUser , socket} = useSocketContext();
 
-    // const nowOnline = chatUser.map((user)=>(user._id));
-    // //chats function
-    // const isOnline = nowOnline.map(userId => onlineUser.includes(userId));
+    const nowOnline = chatUser.map((user)=>(user._id));
+    //chats function
+    const isOnline = nowOnline.map(userId => onlineUser.includes(userId));
 
-    // useEffect(()=>{
-    //     socket?.on("newMessage",(newMessage)=>{
-    //         setNewMessageUsers(newMessage)
-    //     })
-    //     return ()=> socket?.off("newMessage");
-    // },[socket,messages])
+    useEffect(()=>{
+        socket?.on("newMessage",(newMessage)=>{
+            setNewMessageUsers(newMessage)
+        })
+        return ()=> socket?.off("newMessage");
+    },[socket,messages])
 
     //show user with u chatted
     useEffect(() => {
         const chatUserHandler = async () => {
             setLoading(true)
             try {
-                const chatters = await axios.get(`http://localhost:4000/api/user/currentChatters`)
+                const chatters = await axios.get(`http://localhost:4000/api/user/currentChatters`,{withCredentials:true})
                 const data = chatters.data;
                 if (data.success === false) {
                     setLoading(false)
@@ -60,7 +60,7 @@ const Sidebar = ({ onSelectUser }) => {
         e.preventDefault();
         setLoading(true)
         try {
-            const search = await axios.get(`http://localhost:4000/api/user/search?search=${searchInput}`);
+            const search = await axios.get(`http://localhost:4000/api/user/search?search=${searchInput}`,{withCredentials:true});
             const data = search.data;
             if (data.success === false) {
                 setLoading(false)
@@ -99,14 +99,14 @@ const Sidebar = ({ onSelectUser }) => {
         if (confirmlogout === authUser.username) {
             setLoading(true)
             try {
-                const logout = await axios.post('http://localhost:4000/api/auth/logout')
+                const logout = await axios.post('http://localhost:4000/api/auth/logout',{withCredentials:true})
                 const data = logout.data;
                 if (data?.success === false) {
                     setLoading(false)
                     console.log(data?.message);
                 }
                 toast.info(data?.message)
-                localStorage.removeItem('chatapp')
+                localStorage.removeItem('chatApp')
                 setAuthUser(null)
                 setLoading(false)
                 navigate('/login')
@@ -137,7 +137,7 @@ const Sidebar = ({ onSelectUser }) => {
                 </form>
                 <img
                     onClick={() => navigate(`/profile/${authUser?._id}`)}
-                    src={authUser?.profilepic}
+                    src={authUser?.profilePic}
                     className='self-center h-12 w-12 hover:scale-110 cursor-pointer' />
             </div>
             <div className='divider px-3'></div>
@@ -154,15 +154,15 @@ const Sidebar = ({ onSelectUser }) => {
                                                 p-2 py-1 cursor-pointer
                                                 ${selectedUserId === user?._id ? 'bg-sky-500' : ''
                                             } `}>
-                                        {/* Socket is Online
+                                        {/*Socket is Online*/}
                                         <div className={`avatar ${isOnline[index] ? 'online':''}`}>
                                             <div className="w-12 rounded-full">
-                                                <img src={user.profilepic} alt='user.img' />
+                                                <img src={user.profilePic} alt='user.img' />
                                             </div>
                                         </div>
                                         <div className='flex flex-col flex-1'>
                                             <p className='font-bold text-gray-950'>{user.username}</p>
-                                        </div> */}
+                                        </div>
                                     </div>
                                     <div className='divider divide-solid px-3 h-[1px]'></div>
                                 </div>
@@ -201,19 +201,19 @@ const Sidebar = ({ onSelectUser }) => {
                                                     } `}>
 
                                                 {/*Socket is Online*/}
-                                                {/* <div className={`avatar ${isOnline[index] ? 'online':''}`}>
+                                                <div className={`avatar ${isOnline[index] ? 'online':''}`}>
                                                     <div className="w-12 rounded-full">
-                                                        <img src={user.profilepic} alt='user.img' />
+                                                        <img src={user.profilePic} alt='user.img' />
                                                     </div>
                                                 </div>
                                                 <div className='flex flex-col flex-1'>
                                                     <p className='font-bold text-gray-950'>{user.username}</p>
                                                 </div>
                                                     <div>
-                                                        { newMessageUsers.reciverId === authUser._id && newMessageUsers.senderId === user._id ?
+                                                        { newMessageUsers.receiverId === authUser._id && newMessageUsers.senderId === user._id ?
                                                     <div className="rounded-full bg-green-700 text-sm text-white px-[4px]">+1</div>:<></>
                                                         }
-                                                    </div> */}
+                                                    </div>
                                             </div>
                                             <div className='divider divide-solid px-3 h-[1px]'></div>
                                         </div>

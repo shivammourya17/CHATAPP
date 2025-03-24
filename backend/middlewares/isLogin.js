@@ -4,7 +4,7 @@ const User = require("../models/UserSchema");
 exports.isLogin = async (req, res, next) => {
     try {
         // ✅ Extract token properly
-        const token = req.cookies.jwt;
+        const token = req.cookies.accessToken;
         if (!token) {
             return res.status(401).json({ success: false, message: "User not authenticated" });
         }
