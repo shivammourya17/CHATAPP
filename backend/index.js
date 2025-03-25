@@ -1,52 +1,41 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const cookieParser = require("cookie-parser");
-const cors = require("cors"); 
-const { connect } = require("./config/database");
-const { isLogin } = require("./middlewares/isLogin"); 
+import express from "express"
+import dotenv from 'dotenv'
+import dbConnect from "./DB/dbConnect.js";
+import authRouter from  './rout/authUser.js'
+import messageRouter from './rout/messageRout.js'
+import userRouter from './rout/userRout.js'
+import cookieParser from "cookie-parser";
+import path from "path";
+import cors from "cors";
 
-// ✅ Import app & server from socket setup
-const { app, server } = require("./Socket/socket");
+import {app , server} from './Socket/socket.js'
 
+const __dirname = path.resolve();
 
 dotenv.config();
 
-// ✅ Middleware
-app.use(express.json());  
-app.use(cookieParser());  
-
-// ✅ Enable CORS
 app.use(cors({
-    origin: "http://localhost:5173", // Frontend URL
-    credentials: true, // Allow cookies/auth headers
-}));
+    origin: 'http://localhost:5173',
+    credentials: true, // Allow credentials (cookies, sessions, etc.)
+  }));
 
-// ✅ Allow credentials (fixes CORS errors)
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Credentials", "true");
-    next();
-});
 
-// ✅ Connect to MongoDB
-connect();
+app.use(express.json());
+app.use(cookieParser())
 
-// ✅ Import Routes
-const authRegister = require("./routes/authUser");
-const messageRouter = require("./routes/messageRoute");
-const userRouter = require("./routes/userRoute");
+app.use('/api/auth',authRouter)
+app.use('/api/message',messageRouter)
+app.use('/api/user',userRouter)
 
-// ✅ Use Routes
-app.use("/api/auth", authRegister);
-app.use("/api/message", isLogin, messageRouter);
-app.use("/api/user", isLogin, userRouter);
+app.use(express.static(path.join(__dirname,"/frontend/dist")))
 
-// ✅ Test Route
-app.get("/", (req, res) => {
-    res.send("Server is working");
-});
+app.get("*",(req,res)=>{
+    res.sendFile(path.join(__dirname,"frontend","dist","index.html"))
+})
 
-// ✅ Start Server
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-    console.log(`✅ Server is running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000
+
+server.listen(PORT,()=>{
+    dbConnect();
+    console.log(`Working at ${PORT}`);
+})

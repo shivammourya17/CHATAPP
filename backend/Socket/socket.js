@@ -1,32 +1,32 @@
-const express = require("express");
-const { Server } = require("socket.io");
-const http = require("http");
+import {Server} from 'socket.io';
+import http from 'http';
+import express from 'express';
 
 const app = express();
 
 const server = http.createServer(app);
 const io = new Server(server,{
     cors:{
-        origin:['https://slrtech-chatapp.onrender.com'],
+        origin:['http://localhost:5173'],
         methods:["GET","POST"]
     }
 });
 
-const getReceiverSocketId = (receverId)=>{
-    return userSocketmap[receverId];
+export const getReceiverSocketId = (receiverId)=>{
+    return userSocketMap[receiverId];
 };
 
-const userSocketmap={}; //{userId,socketId}
+const userSocketMap={}; //{userId,socketId}
 io.on('connection',(socket)=>{
     const userId = socket.handshake.query.userId;
 
-    if(userId !== "undefine") userSocketmap[userId] = socket.id;
-    io.emit("getOnlineUsers",Object.keys(userSocketmap))
+    if(userId !== "undefine") userSocketMap[userId] = socket.id;
+    io.emit("getOnlineUsers",Object.keys(userSocketMap))
 
     socket.on('disconnect',()=>{
-        delete userSocketmap[userId],
-        io.emit('getOnlineUsers',Object.keys(userSocketmap))
+        delete userSocketMap[userId],
+        io.emit('getOnlineUsers',Object.keys(userSocketMap))
     });
 });
 
-module.exports = { app, io, server, getReceiverSocketId };
+export {app , io , server}

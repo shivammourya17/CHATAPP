@@ -14,7 +14,7 @@ const Sidebar = ({ onSelectUser }) => {
     const navigate = useNavigate();
     const { authUser, setAuthUser } = useAuth();
     const [searchInput, setSearchInput] = useState('');
-    const [searchUser, setSearchUser] = useState([]);
+    const [searchUser, setSearchuser] = useState([]);
     const [chatUser, setChatUser] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedUserId, setSetSelectedUserId] = useState(null);
@@ -38,7 +38,7 @@ const Sidebar = ({ onSelectUser }) => {
         const chatUserHandler = async () => {
             setLoading(true)
             try {
-                const chatters = await axios.get(`http://localhost:4000/api/user/currentChatters`,{withCredentials:true})
+                const chatters = await axios.get(`http://localhost:3000/api/user/currentchatters`)
                 const data = chatters.data;
                 if (data.success === false) {
                     setLoading(false)
@@ -60,7 +60,7 @@ const Sidebar = ({ onSelectUser }) => {
         e.preventDefault();
         setLoading(true)
         try {
-            const search = await axios.get(`http://localhost:4000/api/user/search?search=${searchInput}`,{withCredentials:true});
+            const search = await axios.get(`http://localhost:3000/api/user/search?search=${searchInput}`);
             const data = search.data;
             if (data.success === false) {
                 setLoading(false)
@@ -70,7 +70,7 @@ const Sidebar = ({ onSelectUser }) => {
             if (data.length === 0) {
                 toast.info("User Not Found")
             } else {
-                setSearchUser(data)
+                setSearchuser(data)
             }
         } catch (error) {
             setLoading(false)
@@ -87,8 +87,8 @@ const Sidebar = ({ onSelectUser }) => {
     }
 
     //back from search result
-    const handSearchBack = () => {
-        setSearchUser([]);
+    const handSearchback = () => {
+        setSearchuser([]);
         setSearchInput('')
     }
 
@@ -99,14 +99,14 @@ const Sidebar = ({ onSelectUser }) => {
         if (confirmlogout === authUser.username) {
             setLoading(true)
             try {
-                const logout = await axios.post('http://localhost:4000/api/auth/logout',{withCredentials:true})
+                const logout = await axios.post('http://localhost:3000/api/auth/logout')
                 const data = logout.data;
                 if (data?.success === false) {
                     setLoading(false)
                     console.log(data?.message);
                 }
                 toast.info(data?.message)
-                localStorage.removeItem('chatApp')
+                localStorage.removeItem('chatapp')
                 setAuthUser(null)
                 setLoading(false)
                 navigate('/login')
@@ -137,7 +137,7 @@ const Sidebar = ({ onSelectUser }) => {
                 </form>
                 <img
                     onClick={() => navigate(`/profile/${authUser?._id}`)}
-                    src={authUser?.profilePic}
+                    src={authUser?.profilepic}
                     className='self-center h-12 w-12 hover:scale-110 cursor-pointer' />
             </div>
             <div className='divider px-3'></div>
@@ -157,7 +157,7 @@ const Sidebar = ({ onSelectUser }) => {
                                         {/*Socket is Online*/}
                                         <div className={`avatar ${isOnline[index] ? 'online':''}`}>
                                             <div className="w-12 rounded-full">
-                                                <img src={user.profilePic} alt='user.img' />
+                                                <img src={user.profilepic} alt='user.img' />
                                             </div>
                                         </div>
                                         <div className='flex flex-col flex-1'>
@@ -171,7 +171,7 @@ const Sidebar = ({ onSelectUser }) => {
                         </div>
                     </div>
                     <div className='mt-auto px-1 py-1 flex'>
-                        <button onClick={handSearchBack} className='bg-white rounded-full px-2 py-1 self-center'>
+                        <button onClick={handSearchback} className='bg-white rounded-full px-2 py-1 self-center'>
                             <IoArrowBackSharp size={25} />
                         </button>
 
@@ -203,14 +203,14 @@ const Sidebar = ({ onSelectUser }) => {
                                                 {/*Socket is Online*/}
                                                 <div className={`avatar ${isOnline[index] ? 'online':''}`}>
                                                     <div className="w-12 rounded-full">
-                                                        <img src={user.profilePic} alt='user.img' />
+                                                        <img src={user.profilepic} alt='user.img' />
                                                     </div>
                                                 </div>
                                                 <div className='flex flex-col flex-1'>
                                                     <p className='font-bold text-gray-950'>{user.username}</p>
                                                 </div>
                                                     <div>
-                                                        { newMessageUsers.receiverId === authUser._id && newMessageUsers.senderId === user._id ?
+                                                        { newMessageUsers.reciverId === authUser._id && newMessageUsers.senderId === user._id ?
                                                     <div className="rounded-full bg-green-700 text-sm text-white px-[4px]">+1</div>:<></>
                                                         }
                                                     </div>

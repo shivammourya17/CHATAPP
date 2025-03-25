@@ -8,7 +8,7 @@ import { useSocketContext } from '../context/SocketContext';
 import notify from '../assets/sound/notification.mp3';
 
 const MessageContainer = ({ onBackUser }) => {
-    const { messages, selectedConversation, setMessage,  } = userConversation();
+    const { messages, selectedConversation, setMessage, setSelectedConversation } = userConversation();
     const {socket} = useSocketContext();
     const { authUser } = useAuth();
     const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ const MessageContainer = ({ onBackUser }) => {
         const getMessages = async () => {
             setLoading(true);
             try {
-                const get = await axios.get(`http://localhost:4000/api/message/${selectedConversation?._id}`,{withCredentials:true});
+                const get = await axios.get(`http://localhost:3000/api/message/${selectedConversation?._id}`);
                 const data = await get.data;
                 if (data.success === false) {
                     setLoading(false);
@@ -63,7 +63,7 @@ const MessageContainer = ({ onBackUser }) => {
         e.preventDefault();
         setSending(true);
         try {
-            const res =await axios.post(`http://localhost:4000/api/message/send/${selectedConversation?._id}`,{messages:sendData},{withCredentials:true});
+            const res =await axios.post(`http://localhost:3000/api/message/send/${selectedConversation?._id}`,{messages:sendData});
             const data = await res.data;
             if (data.success === false) {
                 setSending(false);
@@ -101,7 +101,7 @@ const MessageContainer = ({ onBackUser }) => {
                 </div>
                 <div className='flex justify-between mr-2 gap-2'>
                   <div className='self-center'>
-                    <img className='rounded-full w-6 h-6 md:w-10 md:h-10 cursor-pointer' src={selectedConversation?.profilePic} />
+                    <img className='rounded-full w-6 h-6 md:w-10 md:h-10 cursor-pointer' src={selectedConversation?.profilepic} />
                   </div>
                   <span className='text-gray-950 self-center text-sm md:text-xl font-bold'>
                     {selectedConversation?.username}

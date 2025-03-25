@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import MessageContainer from './MessageContainer';
 
-const home = () => {
+const Home = () => {
 
   const [selectedUser , setSelectedUser] = useState(null);
   const [isSidebarVisible , setIsSidebarVisible]= useState(true);
@@ -39,4 +37,5 @@ const home = () => {
   );
 };
 
-export default home;
+export default Home;
+
