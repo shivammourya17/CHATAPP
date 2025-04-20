@@ -36,7 +36,7 @@ const MessageContainer = ({ onBackUser }) => {
         const getMessages = async () => {
             setLoading(true);
             try {
-                const get = await axios.get(`http://localhost:3000/api/message/${selectedConversation?._id}`);
+                const get = await axios.get(`http://localhost:3000/api/message/${selectedConversation?._id}`,{withCredentials:true});
                 const data = await get.data;
                 if (data.success === false) {
                     setLoading(false);
@@ -63,7 +63,7 @@ const MessageContainer = ({ onBackUser }) => {
         e.preventDefault();
         setSending(true);
         try {
-            const res =await axios.post(`http://localhost:3000/api/message/send/${selectedConversation?._id}`,{messages:sendData});
+            const res =await axios.post(`http://localhost:3000/api/message/send/${selectedConversation?._id}`,{messages:sendData},{withCredentials:true});
             const data = await res.data;
             if (data.success === false) {
                 setSending(false);

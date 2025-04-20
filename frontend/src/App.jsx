@@ -3,7 +3,7 @@ import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Route ,Routes } from "react-router-dom";
 import Register from "./pages/Register.jsx";
-import Home from "./components/Home.jsx";
+import Home from "./components/home.jsx";
 import { VerifyUser } from "./utils/VerifyUser.jsx";
 function App() {
   

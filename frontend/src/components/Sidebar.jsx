@@ -38,7 +38,7 @@ const Sidebar = ({ onSelectUser }) => {
         const chatUserHandler = async () => {
             setLoading(true)
             try {
-                const chatters = await axios.get(`http://localhost:3000/api/user/currentchatters`)
+                const chatters = await axios.get(`http://localhost:3000/api/user/currentchatters`,{withCredentials:true})
                 const data = chatters.data;
                 if (data.success === false) {
                     setLoading(false)
@@ -60,7 +60,7 @@ const Sidebar = ({ onSelectUser }) => {
         e.preventDefault();
         setLoading(true)
         try {
-            const search = await axios.get(`http://localhost:3000/api/user/search?search=${searchInput}`);
+            const search = await axios.get(`http://localhost:3000/api/user/search?search=${searchInput}`,{withCredentials:true});
             const data = search.data;
             if (data.success === false) {
                 setLoading(false)
@@ -99,14 +99,14 @@ const Sidebar = ({ onSelectUser }) => {
         if (confirmlogout === authUser.username) {
             setLoading(true)
             try {
-                const logout = await axios.post('http://localhost:3000/api/auth/logout')
+                const logout = await axios.post('http://localhost:3000/api/auth/logout',{withCredentials:true})
                 const data = logout.data;
                 if (data?.success === false) {
                     setLoading(false)
                     console.log(data?.message);
                 }
                 toast.info(data?.message)
-                localStorage.removeItem('chatapp')
+                localStorage.removeItem('chatApp')
                 setAuthUser(null)
                 setLoading(false)
                 navigate('/login')
@@ -123,12 +123,12 @@ const Sidebar = ({ onSelectUser }) => {
     return (
         <div className='h-full w-auto px-1'>
             <div className='flex justify-between gap-2'>
-                <form onSubmit={handelSearchSubmit} className='w-auto flex items-center justify-between bg-white rounded-full '>
+                <form onSubmit={handelSearchSubmit} className='w-auto flex items-center justify-between bg-black rounded-full '>
                     <input
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
                         type='text'
-                        className='px-4 w-auto bg-transparent outline-none rounded-full'
+                        className='px-4 w-auto bg-transparent outline-none rounded-full '
                         placeholder='search user'
                     />
                     <button className='btn btn-circle bg-sky-700 hover:bg-gray-950'>
@@ -210,7 +210,7 @@ const Sidebar = ({ onSelectUser }) => {
                                                     <p className='font-bold text-gray-950'>{user.username}</p>
                                                 </div>
                                                     <div>
-                                                        { newMessageUsers.reciverId === authUser._id && newMessageUsers.senderId === user._id ?
+                                                        { newMessageUsers.receiverId === authUser._id && newMessageUsers.senderId === user._id ?
                                                     <div className="rounded-full bg-green-700 text-sm text-white px-[4px]">+1</div>:<></>
                                                         }
                                                     </div>

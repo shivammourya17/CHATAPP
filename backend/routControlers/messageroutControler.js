@@ -1,12 +1,12 @@
-import Conversation from "../Models/conversationModels.js";
-import Message from "../Models/messageSchema.js";
+import Conversation from "../models/conversationModels.js"
+import Message from "../models/messageSchema.js"
 import { getReceiverSocketId,io } from "../Socket/socket.js";
 
 export const sendMessage =async(req,res)=>{
 try {
     const {messages} = req.body;
     const {id:receiverId} = req.params;
-    const senderId = req.user?._id;
+    const senderId = req.user._conditions._id;
 
 
     let chats = await Conversation.findOne({
@@ -52,11 +52,11 @@ try {
 
 export const getMessages=async(req,res)=>{
 try {
-    const {id:reciverId} = req.params;
+    const {id:receiverId} = req.params;
     const senderId = req.user._conditions._id;
 
     const chats = await Conversation.findOne({
-        participants:{$all:[senderId , reciverId]}
+        participants:{$all:[senderId , receiverId]}
     }).populate("messages")
 
     if(!chats)  return res.status(200).send([]);

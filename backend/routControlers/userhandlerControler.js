@@ -1,5 +1,5 @@
-import Conversation from "../Models/conversationModels.js";
-import User from "../Models/userModels.js";
+import Conversation from "../models/conversationModels.js";
+import User from "../models/userModels.js";
 
 export const getUserBySearch=async(req,res)=>{
 try {
